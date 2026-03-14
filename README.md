@@ -1,62 +1,69 @@
+📚 Digital Banking System – AI-Powered Monitoring
 
----
+A full-stack Digital Banking Application with Spring Boot backend, Angular frontend, MySQL database, and AI-powered monitoring & anomaly detection using Prometheus and Grafana.
 
-# 💰 Digital Banking System
+🚀 Features
 
-A full-stack digital banking application consisting of:
+Full banking API (accounts, transactions, transfers)
 
-- 🏦 `ebanking-backend`: Spring Boot REST API
-- 💻 `ebanking-frontend`: Angular client
-- 🧰 Modular monorepo for development
+Angular frontend for user interaction
 
----
+MySQL database for persistent storage
 
-## 🔗 Project Structure
+Real-time metrics collection via Spring Boot Actuator
 
-Digital_banking/
+Monitoring and visualization with Prometheus and Grafana
 
-├── ebanking-backend/ # Spring Boot API
+Supports AI anomaly detection on key metrics (latency, errors, CPU/memory usage)
 
-└── ebanking-frontend/ # Angular 
-
----
-
-## ⚙️ Setup Instructions
-
-### 1. Clone the repo
-```bash
-git clone https://github.com/lamsiyehkhawla/Digital_banking.git
-cd Digital_banking
-```
- Run the Backend
-```bash
+🛠️ Tech Stack
+Layer	Technology
+Backend	Spring Boot, Spring Data JPA
+Frontend	Angular 19
+Database	MySQL
+Monitoring	Prometheus, Grafana
+AI / ML	Python (optional for anomaly detection)
+Containerization	Docker, Docker Compose
+⚙️ Setup Instructions
+1️⃣ Backend
 cd ebanking-backend
 ./mvnw spring-boot:run
-```
-Access API at:
 
-http://localhost:8080
-3. Run the Frontend
-```bash
-cd ../ebanking-frontend
+
+API available at: http://localhost:8080
+
+2️⃣ Frontend
+cd ebanking-frontend
 npm install
 ng serve
-```
-App available at:
-http://localhost:4200
 
-✅ Features Overview
-Module	Description
-Backend	Customer/account/transaction APIs
-Frontend	Web UI for account & transaction
-Data Initialization	Preloaded data for testing
 
-🧠 Author
-Khawla Lamsiyeh
-GitHub: @lamsiyehkhawla
+App available at: http://localhost:4200
 
-📌 Notes
-You can switch from H2 to MySQL in application.properties.
+3️⃣ MySQL (Docker)
+docker run --name mysql-db -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=banking -p 3306:3306 -d mysql:8
 
-Frontend uses Angular HttpClient and must match backend API URLs.
+4️⃣ Monitoring Stack (Docker Compose)
+cd monitoring
+docker compose up -d
 
+
+Prometheus: http://localhost:9090
+
+Grafana: http://localhost:3000
+Default login: admin / admin
+
+Configure Grafana datasource to Prometheus:
+
+URL: http://host.docker.internal:9090
+
+📊 Monitoring Flow
+Spring Boot App → Actuator Metrics → Prometheus → Grafana Dashboard → AI Anomaly Detection
+
+📈 Next Steps
+
+Simulate traffic to collect realistic metrics
+
+Configure Grafana dashboards for response time, errors, CPU/memory
+
+Train AI model to detect anomalies in metrics
