@@ -8,25 +8,23 @@ import ma.enset.ebankingbackend.enums.OperationType;
 
 import java.util.Date;
 @Entity
-@Data @NoArgsConstructor
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class AccountOperation {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date operationdate;
+
+    private Date operationDate;
+
     private double amount;
+    private String description;
+
     @Enumerated(EnumType.STRING)
     private OperationType type;
+
     @ManyToOne
     private BankAccount bankAccount;
-
-    public void setOperationDate(Date date) {
-    }
-
-    public void setDescription(String description) {
-    }
-
-    public Object getOperationDate() {
-        return null;
-    }
 }

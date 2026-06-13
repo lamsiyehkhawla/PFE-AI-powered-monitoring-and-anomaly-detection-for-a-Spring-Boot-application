@@ -22,7 +22,7 @@ public class BankService {
             System.out.println(bankAccount.getBalance());
             System.out.println(bankAccount.getStatus());
             System.out.println(bankAccount.getCreatedAt());
-            System.out.println(bankAccount.getCustomer().getName());
+            System.out.println(bankAccount  .getCustomer().getName());
             System.out.println(bankAccount.getClass().getSimpleName());
             if (bankAccount instanceof CurrentAccount) {
                 System.out.println("Over Draft=>" + ((CurrentAccount) bankAccount).getOverDraft());
