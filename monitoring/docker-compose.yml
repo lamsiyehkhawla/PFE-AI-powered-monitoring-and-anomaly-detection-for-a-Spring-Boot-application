@@ -1,4 +1,7 @@
+version: "3.9"
+
 services:
+
   prometheus:
     image: prom/prometheus
     container_name: prometheus
@@ -8,15 +11,86 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - monitoring-net
+    restart: always
+
 
   grafana:
     image: grafana/grafana
     container_name: grafana
     ports:
       - "3000:3000"
+    environment:
+      GF_SMTP_ENABLED: "true"
+      GF_SMTP_HOST: smtp.gmail.com:587
+      GF_SMTP_USER: your_email@gmail.com
+      GF_SMTP_PASSWORD: your_app_password
+      GF_SMTP_FROM_ADDRESS: your_email@gmail.com
+      GF_SMTP_FROM_NAME: Grafana Alerts
+      GF_SMTP_STARTTLS_POLICY: OpportunisticStartTLS
     networks:
       - monitoring-net
+    restart: always
+
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.1
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ports:
+      - "9200:9200"
+    networks:
+      - monitoring-net
+    restart: always
+
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.14.1
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+
+      # 🔐 REQUIRED FOR ALERTING (fixes your error)
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=aJckzqRwxMtuefQR+cc+7BcnDBzxOqduEyjvf832co8=
+
+      # 🔐 Recommended (prevents future issues)
+      - XPACK_SECURITY_ENCRYPTIONKEY=jXiEtQs7Fi/7v3bvR/5Te80ArN5nZU1Yj7eDXgKSTn4=
+      - XPACK_TASKS_ENCRYPTIONKEY=nZ1G29IfuRCRg6vKlFRNNUfetgsWwDMLbEgt74W2DVk=
+
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - monitoring-net
+    restart: always
+
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.14.1
+    container_name: filebeat
+    user: root
+    command: ["filebeat", "-e", "--strict.perms=false"]
+
+    volumes:
+      - ./logs:/logs:ro
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - filebeat-data:/usr/share/filebeat/data
+
+    depends_on:
+      - elasticsearch
+
+    networks:
+      - monitoring-net
+    restart: always
+
 
 networks:
   monitoring-net:
     driver: bridge
+
+
+volumes:
+  filebeat-data:

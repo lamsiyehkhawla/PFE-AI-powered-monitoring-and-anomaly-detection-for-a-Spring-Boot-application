@@ -1,0 +1,19 @@
+filebeat.inputs:
+  - type: filestream
+    id: banking-logs
+    paths:
+      - /logs/application.log
+
+processors:
+  - add_fields:
+      target: ""
+      fields:
+        service: banking-backend
+
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]
+  index: "banking-logs-%{+yyyy.MM.dd}"
+
+setup.template.enabled: false
+
+logging.level: info
