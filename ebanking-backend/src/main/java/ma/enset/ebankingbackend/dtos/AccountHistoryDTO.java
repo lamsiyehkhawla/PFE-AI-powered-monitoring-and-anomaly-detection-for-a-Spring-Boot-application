@@ -1,6 +1,8 @@
 package ma.enset.ebankingbackend.dtos;
 
 import lombok.Data;
+import ma.enset.ebankingbackend.entities.AccountOperation;
+import ma.enset.ebankingbackend.enums.AccountStatus;
 
 import java.util.List;
 @Data
@@ -8,7 +10,9 @@ public class AccountHistoryDTO {
     private String accountId;
     private double balance;
     private int currentPage;
-    private int totalPages;
     private int pageSize;
-    private List<AccountOperationDTO> accountOperationDTOS;
+    private int totalPages;
+    private List<AccountOperationDTO> operations;
+    private AccountStatus status;
+
 }

@@ -18,6 +18,7 @@ public class ActionLogServiceImpl implements ActionLogService {
 
     @Override
     public void log(String username, String action, String description) {
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
 
@@ -25,22 +26,28 @@ public class ActionLogServiceImpl implements ActionLogService {
         log.setTimestamp(new Date());
         log.setAction(action);
         log.setDescription(description);
-        log.setPerformedByUserId(user.getId());
+        log.setPerformedBy(user); // ✅ IMPORTANT FIX
+
         actionLogRepository.save(log);
     }
 
     @Override
     public List<ActionLog> searchLogs(String username, String action) {
-        String userId = null;
+
+        Long userId = null;
+
         if (username != null) {
             userId = userRepository.findByUsername(username)
-                    .map(User::getId).orElse(null);
+                    .map(User::getId)
+                    .orElse(null);
+
             if (userId == null) return List.of();
         }
+
         if (userId != null && action != null) {
-            return actionLogRepository.findByPerformedByUserIdAndActionOrderByTimestampDesc(userId, action);
+            return actionLogRepository.findByPerformedBy_IdAndActionOrderByTimestampDesc(userId, action);
         } else if (userId != null) {
-            return actionLogRepository.findByPerformedByUserIdOrderByTimestampDesc(userId);
+            return actionLogRepository.findByPerformedBy_IdOrderByTimestampDesc(userId);
         } else if (action != null) {
             return actionLogRepository.findByActionOrderByTimestampDesc(action);
         } else {

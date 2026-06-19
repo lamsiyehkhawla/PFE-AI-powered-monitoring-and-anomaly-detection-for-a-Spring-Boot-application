@@ -9,10 +9,7 @@ import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -36,22 +33,36 @@ public class SecurityController {
     }
 
     @PostMapping("/login")
-    public Map<String, String> login(String username, String password) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+    public Map<String, String> login(@RequestBody Map<String, String> request) {
+
+        String username = request.get("username");
+        String password = request.get("password");
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password)
+        );
+
         Instant now = Instant.now();
-        String scope = authentication.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.joining(" "));
+
+        String scope = authentication.getAuthorities()
+                .stream()
+                .map(a -> a.getAuthority())
+                .collect(Collectors.joining(" "));
+
         JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
                 .issuedAt(now)
                 .expiresAt(now.plus(10, ChronoUnit.MINUTES))
                 .subject(username)
                 .claim("scope", scope)
                 .build();
-        JwtEncoderParameters jwtEncoderParameters =
+
+        String jwt = jwtEncoder.encode(
                 JwtEncoderParameters.from(
                         JwsHeader.with(MacAlgorithm.HS512).build(),
                         jwtClaimsSet
-                );
-        String jwt = jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
+                )
+        ).getTokenValue();
+
         return Map.of("access_token", jwt);
     }
 

@@ -8,29 +8,26 @@ import ma.enset.ebankingbackend.enums.AccountStatus;
 
 import java.util.Date;
 import java.util.List;
-
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TYPE", length = 4)
-@Data
-@NoArgsConstructor
+@Data @NoArgsConstructor
 @AllArgsConstructor
-public abstract class BankAccount {
-
+public class BankAccount {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-
     private double balance;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-
+    private Date dateCreated;
+    @Enumerated(EnumType.STRING)
     private AccountStatus status;
-
     @ManyToOne
     private Customer customer;
-
-    @OneToMany(mappedBy = "bankAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "bankAccount",fetch = FetchType.LAZY)
     private List<AccountOperation> accountOperations;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User createdBy;
+
+    public boolean getCreatedAt() {
+        return createdBy != null;
+    }
 }
